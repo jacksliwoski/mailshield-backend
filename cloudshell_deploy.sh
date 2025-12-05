@@ -30,15 +30,20 @@ npx cdk bootstrap
 npx cdk deploy --require-approval never
 
 # 6. Generate .env Output
+# We disable 'set -e' here so the script doesn't crash if one variable is missing
+set +e 
+
 echo ""
 echo "✅ DEPLOYMENT COMPLETE!"
 echo "---------------------------------------------------"
 echo "👇 COPY THIS INTO YOUR FRONTEND .env FILE 👇"
 echo "---------------------------------------------------"
 
-# Fetch outputs using AWS CLI
+# Detect Region safely (CloudShell provides AWS_REGION env var)
+REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-2}}"
 STACK_NAME="MailShieldStack"
-REGION=$(aws configure get region)
+
+# Fetch outputs using AWS CLI
 DECISIONS_BUCKET=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='DecisionsBucketName'].OutputValue" --output text)
 HITL_TABLE=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='HitlTableName'].OutputValue" --output text)
 FEEDBACK_TABLE=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='FeedbackTableName'].OutputValue" --output text)
@@ -46,7 +51,6 @@ CONTROLLER_FN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --qu
 FEEDBACK_AGENT_FN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='FeedbackAgentName'].OutputValue" --output text)
 API_BASE_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue" --output text)
 
-# Construct the full endpoint URL for the simple analyzer
 LAMBDA_ENDPOINT="${API_BASE_URL}analyze"
 
 echo "# AWS Credentials"
