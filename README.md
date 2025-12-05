@@ -11,7 +11,7 @@ You can deploy this entire system directly from your browser without installing 
 3.  Run the following commands:
 
     ```bash
-    git clone [https://github.com/YOUR_USERNAME/mailshield-backend.git](https://github.com/YOUR_USERNAME/mailshield-backend.git)
+    git clone https://github.com/jacksliwoski/mailshield-backend.git
     cd mailshield-backend
     chmod +x cloudshell_deploy.sh
     ./cloudshell_deploy.sh
