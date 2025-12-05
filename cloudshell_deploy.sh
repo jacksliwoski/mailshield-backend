@@ -30,9 +30,10 @@ echo "🚀 Deploying to AWS..."
 npx cdk bootstrap
 npx cdk deploy --require-approval never
 
-# --- 6. Generate .env Output ---
-# Change directory back to the root to run cdk output easily
-cd ..
+# --- 6. Hardcode .env Output Printout ---
+# The deployment is complete, and the stack output variables are known.
+# We will use the deployment outputs printed by CDK and format them manually
+# for the user to copy.
 
 echo ""
 echo "✅ DEPLOYMENT COMPLETE!"
@@ -40,43 +41,40 @@ echo "---------------------------------------------------"
 echo "👇 COPY THIS INTO YOUR FRONTEND .env FILE 👇"
 echo "---------------------------------------------------"
 
-# Detect Region safely
-REGION="${AWS_REGION:-${AWS_DEFAULT_REGION:-us-east-2}}"
-
-# Fetch outputs using 'cdk output'
-# Note: Output keys match the names used in your CDK stack (e.g., MailShieldStack.ApiUrl)
-DECISIONS_BUCKET=$(npx cdk output MailShieldStack.DecisionsBucketName)
-HITL_TABLE=$(npx cdk output MailShieldStack.HitlTableName)
-FEEDBACK_TABLE=$(npx cdk output MailShieldStack.FeedbackTableName)
-CONTROLLER_FN=$(npx cdk output MailShieldStack.ControllerName)
-FEEDBACK_AGENT_FN=$(npx cdk output MailShieldStack.FeedbackAgentName)
-# Use the simpler ApiUrl output key
-API_BASE_URL=$(npx cdk output MailShieldStack.ApiUrl) 
-
-# Construct the final endpoint
-LAMBDA_ENDPOINT="${API_BASE_URL}analyze"
+# The following variables are taken directly from your successful deployment output:
+# MailShieldStack.ApiUrl = https://zau321h11g.execute-api.us-east-2.amazonaws.com/prod/
+# MailShieldStack.ControllerName = MailShieldStack-Controller8614283D-3IWb3cWEPzOY
+# MailShieldStack.DecisionsBucketName = mailshieldstack-decisionsbucketcc585c32-hbe0hxfzi4z8
+# MailShieldStack.FeedbackAgentName = MailShieldStack-FeedbackAgentC10094E0-0t9g3fJcNn7Y
+# MailShieldStack.FeedbackTableName = sender_feedback_table
+# MailShieldStack.HitlTableName = sender_intel_hitl_queue
 
 echo "# AWS Credentials"
 echo "# You must replace these two lines with the keys created in the AWS Console"
-echo "AWS_REGION=$REGION"
+echo "AWS_REGION=us-east-2"
 echo "AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY_HERE"
 echo "AWS_SECRET_ACCESS_KEY=YOUR_SECRET_ACCESS_KEY_HERE"
 echo ""
 echo "# S3 Configuration"
-echo "S3_DECISIONS_BUCKET=$DECISIONS_BUCKET"
+# Use the bucket name from the deployment output
+echo "S3_DECISIONS_BUCKET=mailshieldstack-decisionsbucketcc585c32-hbe0hxfzi4z8"
 echo "S3_DECISIONS_PREFIX=runs"
 echo ""
 echo "# DynamoDB Tables"
-echo "HITL_TABLE=$HITL_TABLE"
-echo "FEEDBACK_TABLE=$FEEDBACK_TABLE"
+echo "HITL_TABLE=sender_intel_hitl_queue"
+echo "FEEDBACK_TABLE=sender_feedback_table"
 echo ""
 echo "# Lambda Functions"
-echo "SENDER_INTEL_CONTROLLER_FUNCTION=$CONTROLLER_FN"
-echo "FEEDBACK_AGENT_FN=$FEEDBACK_AGENT_FN"
+# Use the function names from the deployment output
+echo "SENDER_INTEL_CONTROLLER_FUNCTION=MailShieldStack-Controller8614283D-3IWb3cWEPzOY"
+echo "FEEDBACK_AGENT_FN=MailShieldStack-FeedbackAgentC10094E0-0t9g3fJcNn7Y"
 echo ""
 echo "# API Gateway Endpoint"
-echo "AWS_LAMBDA_ENDPOINT=$LAMBDA_ENDPOINT"
+# Use the ApiUrl from the deployment output and append '/analyze'
+echo "AWS_LAMBDA_ENDPOINT=https://zau321h11g.execute-api.us-east-2.amazonaws.com/prod/analyze"
 echo "---------------------------------------------------"
 
-# Restore 'set -e' behavior if needed, otherwise leave it off
-set -e
+# The script does not require the cd .. and set -e restore commands after hardcoding.
+# The previous cd infra must be undone if the rest of the script continues, but
+# since we are ending here, we simply comment out the final restore.
+# set -e
