@@ -39,15 +39,14 @@ echo "---------------------------------------------------"
 # Fetch outputs using AWS CLI
 STACK_NAME="MailShieldStack"
 REGION=$(aws configure get region)
-DECISIONS_BUCKET=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='DecisionsBucket'].OutputValue" --output text)
-HITL_TABLE=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='HitlTable'].OutputValue" --output text)
-FEEDBACK_TABLE=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='FeedbackTable'].OutputValue" --output text)
+DECISIONS_BUCKET=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='DecisionsBucketName'].OutputValue" --output text)
+HITL_TABLE=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='HitlTableName'].OutputValue" --output text)
+FEEDBACK_TABLE=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='FeedbackTableName'].OutputValue" --output text)
 CONTROLLER_FN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='ControllerName'].OutputValue" --output text)
 FEEDBACK_AGENT_FN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='FeedbackAgentName'].OutputValue" --output text)
 API_BASE_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue" --output text)
 
 # Construct the full endpoint URL for the simple analyzer
-# Note: CDK output usually includes the trailing slash, e.g., ".../prod/"
 LAMBDA_ENDPOINT="${API_BASE_URL}analyze"
 
 echo "# AWS Credentials"
