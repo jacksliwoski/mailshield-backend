@@ -56,7 +56,7 @@ CONTROLLER_FN=$(get_cfn_output "ControllerName")
 FEEDBACK_AGENT_FN=$(get_cfn_output "FeedbackAgentName")
 API_BASE_URL=$(get_cfn_output "ApiUrl")
 
-# Build the endpoint URL (append 'analyze' to the base API URL)
+# Build the endpoint URL
 LAMBDA_ENDPOINT="${API_BASE_URL}analyze"
 
 echo "# AWS Credentials"
